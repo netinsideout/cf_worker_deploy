@@ -1,5 +1,8 @@
 {
   "name": "withered-feather-21b7",
   "compatibility_date": "2025-09-09",
-  "main": "src/worker.js"
+  "main": "src/worker.js",
+  "vars": {
+    "TEST_STRING": "Version 3"
+  }
 }
