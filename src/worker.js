@@ -10,6 +10,6 @@
 
 export default {
     async fetch(request, env, ctx) {
-        return new Response(`Hello World!!! ${env.TEST_STRING}`);
+        return new Response(`Hello World!!! ${env.DEPLOY_VERSION}`);
     }
 };
