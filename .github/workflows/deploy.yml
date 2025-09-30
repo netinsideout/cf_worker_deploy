@@ -1,0 +1,50 @@
+name: Deploy Cloudflare Worker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy Worker
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install git-crypt
+        run: sudo apt-get update && sudo apt-get install -y git-crypt
+
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Unlock Encrypted Files
+        run: git-crypt unlock
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Publish Secrets to Cloudflare
+        run: |
+          while IFS='=' read -r key value; do
+            [[ "$key" =~ ^# || -z "$key" ]] && continue
+            value_unquoted=$(echo "$value" | sed -e 's/^"//' -e 's/"$//')
+            echo "$value_unquoted" | npx wrangler secret put "$key"
+          done < secrets.env
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
