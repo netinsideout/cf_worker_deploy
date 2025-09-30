@@ -41,6 +41,7 @@ jobs:
 
       - name: Publish Secrets to Cloudflare
         run: |
+          sed -i 's/\r$//' secrets.env
           while IFS='=' read -r key value; do
             [[ "$key" =~ ^# || -z "$key" ]] && continue
             value_unquoted=$(echo "$value" | sed -e 's/^"//' -e 's/"$//')
