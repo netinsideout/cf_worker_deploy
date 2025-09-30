@@ -12,7 +12,6 @@ export default {
     async fetch(request, env, ctx) {
         const urlPartnerMapping = JSON.parse(env.URL_PARTNER_MAPPING);
         console.log(urlPartnerMapping);
-
-        return new Response(`Hello World!!! ${env.DEPLOY_VERSION}`);
+        return new Response(`Hello World3!!! ${env.DEPLOY_VERSION}`);
     }
 };
